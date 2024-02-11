@@ -2,18 +2,14 @@ package org.example;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.Vector;
 
 public class writer {
     public writer(String file){
         file_ = file;
     }
 
-    public void write(Map<String, Integer> mp) throws Exception {
+    public void write(Map<String, Integer> mp) {
         //это ужас какой-то я честно признаю что мне помогал чат гпт
         int total_words = mp.values().stream().mapToInt(Integer::intValue).sum();
         try (BufferedWriter Writer = new BufferedWriter(new FileWriter(file_))) {

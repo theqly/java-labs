@@ -10,7 +10,7 @@ public class reader {
         stat = new HashMap<>();
     }
 
-    public void read() throws Exception {
+    public void read() {
         try (BufferedReader reader = new BufferedReader(new FileReader(file_))) {
             String line;
             while ((line = reader.readLine()) != null) {
