@@ -14,7 +14,7 @@ public class reader {
         try (BufferedReader reader = new BufferedReader(new FileReader(file_))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                for(String Word : line.split("[^\\p{L}\\p{N}]+")){
+                for(String Word : line.split("\\P{Alnum}+")){
                     if(!Word.isEmpty()){
                         stat.put(Word, stat.getOrDefault(Word, 0) + 1);
                     }
