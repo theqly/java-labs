@@ -3,7 +3,7 @@ package org.example;
 public class Main {
     public static void main(String[] args) {
         if (args.length < 2) {
-            System.err.println("Usage: java Main <input_file> <output_file>");
+            System.err.println("not entered <input_file> <output_file>");
             return;
         }
 
