@@ -5,15 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c1d8f150-41ae-4f8a-8856-8eb840804ff5" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/in.txt" beforeDir="false" afterPath="$PROJECT_DIR$/in.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/reader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Reader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/writer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Writer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/org/example/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/org/example/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/org/example/reader.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/org/example/writer.class" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,7 +91,7 @@
       <workItem from="1707647553907" duration="534000" />
       <workItem from="1707648098652" duration="13667000" />
       <workItem from="1707675246545" duration="128000" />
-      <workItem from="1707737118238" duration="904000" />
+      <workItem from="1707737118238" duration="1028000" />
     </task>
     <servers />
   </component>
