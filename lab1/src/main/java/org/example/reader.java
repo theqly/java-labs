@@ -16,6 +16,7 @@ public class reader {
             while ((line = reader.readLine()) != null) {
                 for(String Word : line.split("\\P{Alnum}+")){
                     if(!Word.isEmpty()){
+                        //за один проход
                         stat.put(Word, stat.getOrDefault(Word, 0) + 1);
                     }
                 }
