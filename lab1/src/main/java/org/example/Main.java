@@ -10,12 +10,12 @@ public class Main {
         String in = args[0];
         String out = args[1];
 
-        reader rd = new reader(in);
-        writer wr = new writer(out);
+        Reader reader = new Reader(in);
+        Writer writer = new Writer(out);
 
         try {
-            rd.read();
-            wr.write(rd.get_stat());
+            reader.read();
+            writer.write(reader);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
