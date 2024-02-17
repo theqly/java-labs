@@ -6,13 +6,13 @@ import java.util.Map;
 
 public class Reader {
     public Reader(String file){
-        this.file = file;
+        this.fileName = file;
         this.stat = new HashMap<>();
         this.totalWords = 0;
     }
 
     public void read() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 for(String Word : line.split("\\P{Alnum}+")){
@@ -33,7 +33,7 @@ public class Reader {
     public int getTotalWords(){
         return totalWords;
     }
-    private final String file;
+    private final String fileName;
     private final Map<String, Integer> stat;
     private int totalWords;
 }
