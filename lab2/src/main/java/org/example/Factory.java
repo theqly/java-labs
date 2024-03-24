@@ -1,5 +1,11 @@
 package org.example;
 
+import org.example.Exceptions.ScriptException;
+import org.example.Exceptions.SeparateExceptions.CantCreateNewInstanceException;
+import org.example.Exceptions.SeparateExceptions.ClassInFactoryNotFoundException;
+import org.example.Exceptions.SeparateExceptions.FactoryCastException;
+import org.example.Exceptions.FileExceptions.FactoryConfigFileNotFoundException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -9,30 +15,30 @@ import java.util.Properties;
 public class Factory {
     public Factory(){
         this.operations = new HashMap<>();
-        try {
-            fillOperations();
-        } catch (IOException e){
-            System.err.println("Executing ended with exception: " + e.getMessage());
-        }
+        fillOperations();
     }
 
     public Operation createOperation(String operationName){
         Class<? extends Operation> operationClass = operations.get(operationName);
         if(operationClass == null){
-            throw new RuntimeException("Cant find a class with name " + operationName);
+            throw new ClassInFactoryNotFoundException();
         }
         try{
             return operationClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e){
-            throw new RuntimeException("Executing ended with exception: " + e.getMessage());
+            throw new CantCreateNewInstanceException();
         }
     }
 
-    private void fillOperations() throws IOException{
+    private void fillOperations(){
         Properties properties = new Properties();
-        try(InputStream inputStream = getClass().getResourceAsStream("/factory.properties")){
+        try{
+            InputStream inputStream = getClass().getResourceAsStream("/factory.properties");
             properties.load(inputStream);
+        } catch (Exception e){
+            throw new FactoryConfigFileNotFoundException();
         }
+
         for(String operationName : properties.stringPropertyNames()){
             String className = properties.getProperty(operationName);
             try{
@@ -40,10 +46,10 @@ public class Factory {
                 if(Operation.class.isAssignableFrom(operationClass)){
                     operations.put(operationName, (Class<? extends Operation>) operationClass);
                 } else {
-                    throw new RuntimeException("Class " + operationName + " does not rebenok of Operation");
+                    throw new FactoryCastException();
                 }
             } catch (ClassNotFoundException e){
-                System.err.println("Executing ended with exception: " + e.getMessage());
+                throw new ClassInFactoryNotFoundException();
             }
         }
     }
