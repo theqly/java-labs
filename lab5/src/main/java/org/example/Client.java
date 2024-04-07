@@ -24,15 +24,15 @@ public class Client {
         String serverAddress = "localhost";
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter your nickname: ");
-        String nickname = scanner.nextLine();
+        String nick = scanner.nextLine();
 
-        Client client = new Client(serverAddress, port, nickname);
+        Client client = new Client(serverAddress, port, nick);
         client.start();
         while (true){
             //System.out.println("Enter your message: ");
             String message = scanner.nextLine();
             try{
-                client.sendMessage(new Message(nickname, message));
+                client.sendMessage(new Message(client.getNickname(), message));
             } catch (IOException e){
                 System.out.println(e.getMessage());
             }
@@ -59,6 +59,11 @@ public class Client {
     public void sendMessage(Message message) throws IOException {
         out.writeObject(message);
     }
+
+    public String getNickname(){
+        return nickname;
+    }
+
     public static String getMessage() throws IOException, ClassNotFoundException {
         return (String)in.readObject();
     }
