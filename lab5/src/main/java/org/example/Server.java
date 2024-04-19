@@ -59,7 +59,8 @@ public class Server {
         for (ClientThread client : clients) {
             try {
                 if(!client.sendMessage(message)){
-                    removeClient(client);
+                    DisconnectListener disconnectListener = new DisconnectListener(client);
+                    disconnectListener.start();
                 }
             } catch (IOException e) {
                 System.out.println(e.getMessage());
@@ -71,6 +72,7 @@ public class Server {
     private synchronized void removeClient(ClientThread client){
         clients.remove(client);
         client.close();
+
         System.out.println("Client disconnected");
     }
 
@@ -115,7 +117,8 @@ public class Server {
             while (!Thread.interrupted()) {
                 try {
                     //String message;
-                    Message message = (Message) in.readObject();
+                    String json = (String) in.readObject();
+                    Message message = gson.fromJson(json, Message.class);
                     if (message == null) break;
                     broadcast(message.getNickname() + ": " + message.getContent());
                 } catch (IOException | ClassNotFoundException e) {
@@ -126,21 +129,8 @@ public class Server {
         }
 
         public boolean sendMessage(String message) throws IOException {
-            if(!socket.isConnected()){
-                timer.scheduleAtFixedRate(new TimerTask() {
-                    int secondsAway = 0;
-                    @Override
-                    public void run() {
-                        secondsAway++;
-                        if(socket.isConnected()) timer.cancel();
-                        if(secondsAway >= 3 && !socket.isConnected()){
-                            timer.cancel();
-                            close();
-                        }
-                    }
-                }, 0, 1000);
-                return false;
-            }
+            if(!socket.isConnected()) return false;
+            String json = gson.toJson(message);
             try{
                 out.writeObject(message);
                 out.flush();
@@ -160,6 +150,32 @@ public class Server {
             }
         }
 
+    }
+
+    class DisconnectListener extends Thread{
+        private final ClientThread client;
+        private int seconds;
+        public DisconnectListener(ClientThread client){
+            this.client = client;
+        }
+
+        @Override
+        public void run(){
+            try {
+                while (seconds < 30){
+                    sleep(3000);
+                    if(client.socket.isConnected()) break;
+                    else seconds += 3;
+                }
+                if(seconds == 30){
+                    System.out.println("*** Disconnecting client " + client.socket + ": 30 seconds left");
+                    removeClient(client);
+                }
+            } catch (InterruptedException e){
+                System.out.println("*** Interruption! Disconnecting client " + client.socket);
+                removeClient(client);
+            }
+        }
     }
 
 }

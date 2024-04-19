@@ -1,5 +1,7 @@
 package org.example;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -7,6 +9,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class Client {
+    private Gson gson;
     private static ObjectInputStream in;
     private ObjectOutputStream out;
     private final String server;
@@ -41,6 +44,7 @@ public class Client {
     }
 
     public void start(){
+        gson = new Gson();
         try{
             socket = new Socket(server, port);
         } catch (IOException e) {
@@ -57,14 +61,31 @@ public class Client {
         listenerThread.start();
     }
     public void sendMessage(Message message) throws IOException {
-        out.writeObject(message);
+        String json = gson.toJson(message);
+        out.writeObject(json);
+        out.flush();
     }
 
     public String getNickname(){
         return nickname;
     }
 
-    public static String getMessage() throws IOException, ClassNotFoundException {
+    public String getMessage() throws IOException, ClassNotFoundException {
         return (String)in.readObject();
+    }
+
+    class ListenerThread extends Thread{
+        @Override
+        public void run(){
+            while (true){
+                try{
+                    String message = getMessage();
+                    //System.out.println("Received message: ");
+                    System.out.println(message);
+                } catch (IOException | ClassNotFoundException e){
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
     }
 }

@@ -31,15 +31,14 @@ public class View extends JPanel{
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-        int pix = 50;
-        for(int x = 0; x < model.getField().getWidth(); x += pix){
-            for(int y = 0; y < model.getField().getHeight(); y += 20){
-                if(model.getField().getMap()[x][y] == 0){
+        for(int x = 0; x < model.getField().getHeight(); ++x){
+            for(int y = 0; y < model.getField().getWidth(); ++y){
+                if(model.getField().getType(x, y) == 0){
                     g.setColor(Color.BLACK);
-                    g.fillRect(x*pix, y*pix, pix, pix);
+                    g.fillRect(x, y, 1, 1);
                 } else {
                     g.setColor(Color.WHITE);
-                    g.fillRect(pix, y, pix, pix);
+                    g.fillRect(x, y, 1, 1);
                 }
 
             }

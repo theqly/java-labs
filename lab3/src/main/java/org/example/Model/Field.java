@@ -31,8 +31,8 @@ public class Field {
         }
     }
 
-    public boolean isWall(int x, int y){
-        return map[x][y] == 1;
+    public int getType(int x, int y){
+        return map[x][y];
     }
     public void setPlayerPosition(int x, int y){
         map[x][y] = 2;
