@@ -14,6 +14,7 @@ public class Server {
     private final ArrayList<ClientThread> clients;
     private final LinkedList<Message> messageHistory;
     private final Gson gson;
+    private final long timeToDisconnect = 30000;
 
     public Server(int port) {
         this.port = port;
@@ -122,6 +123,7 @@ public class Server {
                         broadcast(message);
                     } else if(message.getType() == 1){
                         lastReceivedActivity = System.currentTimeMillis();
+                        sendMessage(message);
                     }
                 } catch (IOException | ClassNotFoundException e) {
                     System.out.println(e.getMessage());
@@ -174,7 +176,7 @@ public class Server {
             while (needToWork){
                 for(Iterator<ClientThread> iterator = clients.iterator(); iterator.hasNext();){
                     ClientThread client = iterator.next();
-                    if(System.currentTimeMillis() - client.getLastReceivedActivity() >= 4000){
+                    if(System.currentTimeMillis() - client.getLastReceivedActivity() >= timeToDisconnect){
                         iterator.remove();
                         removeClient(client);
                     }

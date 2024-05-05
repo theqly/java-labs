@@ -17,6 +17,8 @@ public class Client {
     private Socket socket;
     private final int port;
     private final String nickname;
+    private long lastReceived;
+    private final long timeTiDisconnect = 30000;
     public Client(String server, int port, String nickname){
         this.server = server;
         this.port = port;
@@ -34,7 +36,6 @@ public class Client {
         client.start();
         while (true){
             if(client.getSocket().isClosed()) break;
-            //System.out.println("Enter your message: ");
             String message = scanner.nextLine();
             try{
                 client.sendMessage(new Message(client.getNickname(), message, 0));
@@ -64,6 +65,8 @@ public class Client {
         PingThread pingThread = new PingThread();
         pingThread.start();
     }
+
+
     public void sendMessage(Message message) throws IOException {
         String json = gson.toJson(message);
         out.writeObject(json);
@@ -80,8 +83,21 @@ public class Client {
 
     public Message getMessage() throws IOException, ClassNotFoundException {
         if(socket.isClosed()) return null;
+        if(socket.isInputShutdown()) return null;
+        if(socket.isOutputShutdown()) return null;
         String json = (String)in.readObject();
+        if (json == null) return null;
         return gson.fromJson(json, Message.class);
+    }
+
+    public void stop() {
+        try {
+            in.close();
+            out.close();
+            socket.close();
+        } catch (IOException e){
+
+        }
     }
 
     class ListenerThread extends Thread{
@@ -91,9 +107,12 @@ public class Client {
                 try{
                     Message message = getMessage();
                     if (message == null) break;
+                    if (message.getType() == 0);
                     System.out.println(message.getNickname() + ": " + message.getContent());
+                    lastReceived = System.currentTimeMillis();
                 } catch (IOException | ClassNotFoundException e){
-                    System.out.println(e.getMessage());
+                    System.out.println("*** Socket unavailable " + e + " ***");
+                    break;
                 }
             }
         }
@@ -106,6 +125,11 @@ public class Client {
                 try {
                     sendMessage(new Message(nickname, "ping", 1));
                     sleep(3000);
+                    if(System.currentTimeMillis() - lastReceived >= timeTiDisconnect) {
+                        System.out.println("*** Server not available ***");
+                        Client.this.stop();
+                        break;
+                    }
                 } catch (IOException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
