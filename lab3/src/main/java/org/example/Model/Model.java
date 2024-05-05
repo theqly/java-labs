@@ -11,7 +11,7 @@ public class Model {
         field = new Field(500, 500);
         player = new Player();
         player.setPosition(100, 100);
-        field.initMap(new File("/home/theqly/programming/projects/java-labs/lab3/src/main/resources/level1.txt"));
+        field.initMap(new File("/home/whoistheql/programming/projects/java-labs/lab3/src/main/resources/level1.txt"));
     }
 
     public void movePlayer(Player.direction direction){

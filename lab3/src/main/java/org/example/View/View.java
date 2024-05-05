@@ -22,10 +22,6 @@ public class View extends JPanel{
     private void initialize() {
         frame.add(this);
         frame.setSize(model.getField().getWidth(), model.getField().getHeight());
-        System.out.println("Width: " + model.getField().getWidth());
-        System.out.println("Height: " + model.getField().getHeight());
-        System.out.println("Frame width: " + frame.getWidth());
-        System.out.println("Frame height: " + frame.getHeight());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setFocusable(true);
         frame.setVisible(true);
@@ -40,7 +36,7 @@ public class View extends JPanel{
         for(int y = 0; y < field.getHeight(); ++y){
             for(int x = 0; x < field.getWidth(); ++x){
                 if(field.getType(x, y) == Field.type.VOID){
-                    g.setColor(new Color(185, 148, 112));
+                    g.setColor(new Color(120, 95, 63));
                 } else {
                     g.setColor(new Color(222, 172, 128));
                 }
