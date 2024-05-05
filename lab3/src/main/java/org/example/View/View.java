@@ -1,7 +1,6 @@
 package org.example.View;
 
 import org.example.Controller.Controller;
-import org.example.Model.Field;
 import org.example.Model.Model;
 
 import javax.swing.*;
@@ -21,34 +20,29 @@ public class View extends JPanel{
 
     private void initialize() {
         frame.add(this);
-        frame.setSize(model.getField().getWidth(), model.getField().getHeight());
-        System.out.println("Width: " + model.getField().getWidth());
-        System.out.println("Height: " + model.getField().getHeight());
-        System.out.println("Frame width: " + frame.getWidth());
-        System.out.println("Frame height: " + frame.getHeight());
+        frame.setSize(new Dimension(model.getField().getHeight(), model.getField().getWidth()));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(new Dimension(model.getField().getHeight(), model.getField().getWidth()));
+        frame.addKeyListener(controller);
         frame.setFocusable(true);
         frame.setVisible(true);
-        frame.addKeyListener(controller);
-        this.setFocusable(true);
     }
 
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-        Field field = model.getField();
-        for(int y = 0; y < field.getHeight(); ++y){
-            for(int x = 0; x < field.getWidth(); ++x){
-                if(field.getType(x, y) == Field.type.VOID){
-                    g.setColor(new Color(185, 148, 112));
+        for(int x = 0; x < model.getField().getHeight(); ++x){
+            for(int y = 0; y < model.getField().getWidth(); ++y){
+                if(model.getField().getType(x, y) == 0){
+                    g.setColor(Color.BLACK);
+                    g.fillRect(x, y, 1, 1);
                 } else {
-                    g.setColor(new Color(222, 172, 128));
+                    g.setColor(Color.WHITE);
+                    g.fillRect(x, y, 1, 1);
                 }
-                g.fillRect(x, y, 1, 1);
+
             }
         }
-        g.setColor(new Color(181, 193, 142));
-        g.fillRect(model.getPlayer().getPositionX(), model.getPlayer().getPositionY(), 20, 20);
     }
 
 }

@@ -4,15 +4,12 @@ import java.io.*;
 import com.google.gson.Gson;
 
 public class Message{
-    //type 0 -> message, type 1 -> ping
-    private final int type;
     private final String nickname;
     private final String content;
 
-    public Message(String nickname, String content, int type){
+    public Message(String nickname, String content){
         this.nickname = nickname;
         this.content = content;
-        this.type = type;
     }
 
     String getNickname(){
@@ -23,7 +20,13 @@ public class Message{
         return content;
     }
 
-    public int getType() {
-        return type;
+    public String toJson(){
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+
+    public static Message fromJson(String json){
+        Gson gson = new Gson();
+        return gson.fromJson(json, Message.class);
     }
 }

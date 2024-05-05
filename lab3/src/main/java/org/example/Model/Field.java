@@ -5,19 +5,14 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Field {
-    public static enum type{
-        EARTH,
-        VOID,
-
-    }
     private final int height;
     private final int width;
-    private type[][] map;
+    private int[][] map;
 
     public Field(int width, int height){
         this.height = height;
         this.width = width;
-        this.map = new type[height][width];
+        this.map = new int[height][width];
     }
 
     public void initMap(File file){
@@ -27,11 +22,8 @@ public class Field {
             for(int i = 0; i < height; ++i){
                 line = scan.nextLine();
                 String[] tmp = line.split(" ");
-                for(int j = 0; j < width; ++j){
-                    switch (Integer.parseInt(tmp[j])){
-                        case 0 -> map[i][j] = type.VOID;
-                        case 1 -> map[i][j] = type.EARTH;
-                    }
+                for(int j = 0; j < tmp.length; ++j){
+                    map[i][j] = Integer.parseInt(tmp[j]);
                 }
             }
         } catch (FileNotFoundException e){
@@ -39,8 +31,11 @@ public class Field {
         }
     }
 
-    public type getType(int x, int y){
-        return map[y][x];
+    public int getType(int x, int y){
+        return map[x][y];
+    }
+    public void setPlayerPosition(int x, int y){
+        map[x][y] = 2;
     }
 
     public int getHeight() {
@@ -51,7 +46,7 @@ public class Field {
         return width;
     }
 
-    public type[][] getMap() {
+    public int[][] getMap() {
         return map;
     }
 }
