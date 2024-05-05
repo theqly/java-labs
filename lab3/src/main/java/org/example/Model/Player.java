@@ -1,7 +1,14 @@
 package org.example.Model;
 
 public class Player {
-    /* X is 0 and going down, Y is 1 and going right */
+
+    public static enum direction{
+        UP,
+        LEFT,
+        DOWN,
+        RIGHT,
+
+    }
     private final int[] position;
     private final int[] speed;
 

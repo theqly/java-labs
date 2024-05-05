@@ -21,12 +21,11 @@ public class Controller implements KeyListener {
     @Override
     public void keyPressed(KeyEvent event) {
         switch (event.getKeyCode()){
-            case KeyEvent.VK_W -> model.movePlayer(0);
-            case KeyEvent.VK_S -> model.movePlayer(1);
-            case KeyEvent.VK_A -> model.movePlayer(2);
-            case KeyEvent.VK_D -> model.movePlayer(3);
+            case KeyEvent.VK_W -> model.movePlayer(Player.direction.UP);
+            case KeyEvent.VK_A -> model.movePlayer(Player.direction.LEFT);
+            case KeyEvent.VK_S -> model.movePlayer(Player.direction.DOWN);
+            case KeyEvent.VK_D -> model.movePlayer(Player.direction.RIGHT);
         }
-        System.out.println("key pressed\n");
         view.repaint();
     }
 

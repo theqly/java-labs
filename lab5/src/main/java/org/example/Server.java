@@ -1,19 +1,18 @@
 package org.example;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Server {
     private final int port;
     private final ArrayList<ClientThread> clients;
-    private final LinkedList<String> messageHistory;
+    private final LinkedList<Message> messageHistory;
     private final Gson gson;
 
     public Server(int port) {
@@ -34,10 +33,12 @@ public class Server {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("*** Server is open on port " + port + " ***");
+            TimeoutChecker timeoutChecker = new TimeoutChecker();
+            timeoutChecker.start();
             while (running) {
                 Socket socket = serverSocket.accept();
                 System.out.println("*** New client connected: " + socket + " ***");
-                if (!running) break;
+
                 ClientThread client = new ClientThread(socket);
                 clients.add(client);
                 sendHistoryToClient(client);
@@ -55,13 +56,10 @@ public class Server {
 
     }
 
-    public synchronized void broadcast(String message) {
+    public synchronized void broadcast(Message message) {
         for (ClientThread client : clients) {
             try {
-                if(!client.sendMessage(message)){
-                    DisconnectListener disconnectListener = new DisconnectListener(client);
-                    disconnectListener.start();
-                }
+                client.sendMessage(message);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
@@ -70,13 +68,13 @@ public class Server {
     }
 
     private synchronized void removeClient(ClientThread client){
+        broadcast(new Message("server", "client " + client.getSocket() + " disconnected", 0));
+        System.out.println("*** Client disconnected: " + client.getSocket() + " ***");
         clients.remove(client);
         client.close();
-
-        System.out.println("Client disconnected");
     }
 
-    private synchronized void addToMessageHistory(String message) {
+    private synchronized void addToMessageHistory(Message message) {
         messageHistory.addLast(message);
         if (messageHistory.size() > 10) {
             messageHistory.removeFirst();
@@ -84,7 +82,7 @@ public class Server {
     }
 
     private synchronized void sendHistoryToClient(ClientThread client) {
-        for (String message : messageHistory) {
+        for (Message message : messageHistory) {
             try {
                 client.sendMessage(message);
             } catch (IOException e) {
@@ -95,18 +93,18 @@ public class Server {
 
     class ClientThread extends Thread {
         private final Socket socket;
+        private boolean isConnected;
+        private long lastReceivedActivity;
         private ObjectInputStream in;
         private ObjectOutputStream out;
 
-        private Timer timer;
-
         public ClientThread(Socket socket) {
             this.socket = socket;
-            timer = new Timer();
+            isConnected = true;
+            lastReceivedActivity = 0;
             try {
                 out = new ObjectOutputStream(socket.getOutputStream());
                 in = new ObjectInputStream(socket.getInputStream());
-                broadcast("*** New client connected: " + socket + " ***");
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
@@ -114,13 +112,17 @@ public class Server {
 
         @Override
         public void run() {
-            while (!Thread.interrupted()) {
+            while (isConnected) {
                 try {
-                    //String message;
                     String json = (String) in.readObject();
                     Message message = gson.fromJson(json, Message.class);
                     if (message == null) break;
-                    broadcast(message.getNickname() + ": " + message.getContent());
+                    if (message.getType() == 0) {
+                        lastReceivedActivity = System.currentTimeMillis();
+                        broadcast(message);
+                    } else if(message.getType() == 1){
+                        lastReceivedActivity = System.currentTimeMillis();
+                    }
                 } catch (IOException | ClassNotFoundException e) {
                     System.out.println(e.getMessage());
                     break;
@@ -128,11 +130,12 @@ public class Server {
             }
         }
 
-        public boolean sendMessage(String message) throws IOException {
-            if(!socket.isConnected()) return false;
+
+        public boolean sendMessage(Message message) throws IOException {
+            if(socket.isClosed()) return false;
             String json = gson.toJson(message);
             try{
-                out.writeObject(message);
+                out.writeObject(json);
                 out.flush();
             } catch (IOException e){
 
@@ -140,8 +143,17 @@ public class Server {
             return true;
         }
 
+        public Socket getSocket(){
+            return socket;
+        }
+
+        public long getLastReceivedActivity() {
+            return lastReceivedActivity;
+        }
+
         public void close() {
             try {
+                isConnected = false;
                 in.close();
                 out.close();
                 socket.close();
@@ -152,30 +164,27 @@ public class Server {
 
     }
 
-    class DisconnectListener extends Thread{
-        private final ClientThread client;
-        private int seconds;
-        public DisconnectListener(ClientThread client){
-            this.client = client;
+    class TimeoutChecker extends Thread{
+        boolean needToWork;
+        public TimeoutChecker(){
+            needToWork = true;
         }
-
         @Override
         public void run(){
-            try {
-                while (seconds < 30){
+            while (needToWork){
+                for(Iterator<ClientThread> iterator = clients.iterator(); iterator.hasNext();){
+                    ClientThread client = iterator.next();
+                    if(System.currentTimeMillis() - client.getLastReceivedActivity() >= 4000){
+                        iterator.remove();
+                        removeClient(client);
+                    }
+                }
+                try {
                     sleep(3000);
-                    if(client.socket.isConnected()) break;
-                    else seconds += 3;
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-                if(seconds == 30){
-                    System.out.println("*** Disconnecting client " + client.socket + ": 30 seconds left");
-                    removeClient(client);
-                }
-            } catch (InterruptedException e){
-                System.out.println("*** Interruption! Disconnecting client " + client.socket);
-                removeClient(client);
             }
         }
     }
-
 }
