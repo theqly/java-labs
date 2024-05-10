@@ -35,10 +35,9 @@ public class View extends JPanel{
         Field field = model.getField();
         for(int y = 0; y < field.getHeight(); ++y){
             for(int x = 0; x < field.getWidth(); ++x){
-                if(field.getType(x, y) == Field.type.VOID){
-                    g.setColor(new Color(120, 95, 63));
-                } else {
-                    g.setColor(new Color(222, 172, 128));
+                switch (field.getType(x, y)){
+                    case VOID -> g.setColor(new Color(100, 100, 100));
+                    case EARTH -> g.setColor(new Color(200, 200 ,200));
                 }
                 g.fillRect(x, y, 1, 1);
             }

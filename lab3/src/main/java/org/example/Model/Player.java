@@ -9,25 +9,39 @@ public class Player {
         RIGHT,
 
     }
-    private final int[] position;
+    private int positionX;
+    private int positionY;
     private final int[] speed;
+    private final int width;
+    private final int height;
 
-    public Player(){
-        position = new int[2];
+    public Player(int x, int y){
+        positionX = x;
+        positionY = y;
         speed = new int[2];
+        width = 20;
+        height = 20;
     }
 
     public int getPositionX(){
-        return position[0];
+        return positionX;
     }
 
     public int getPositionY(){
-        return position[1];
+        return positionY;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
     }
 
     public void setPosition(int x, int y){
-        position[0] = x;
-        position[1] = y;
+        positionX = x;
+        positionY = y;
     }
 
     public void setSpeed(int dx, int dy){
@@ -40,9 +54,9 @@ public class Player {
     }
 
     public void move(){
-        position[0] += speed[0];
-        if(position[0] < 0) position[0] = 0;
-        position[1] += speed[1];
-        if(position[1] < 0) position[1] = 0;
+        positionX += speed[0];
+        if(positionX < 0) positionX = 0;
+        positionY += speed[1];
+        if(positionY < 0) positionY = 0;
     }
 }

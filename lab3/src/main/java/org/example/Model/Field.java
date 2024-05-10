@@ -38,6 +38,13 @@ public class Field {
             System.out.println(e.getMessage());
         }
     }
+    public void digEarth(int x, int y, int dx, int dy){
+        for(int i = y; i < y + dy; ++i){
+            for(int j = x; j < x + dx; ++j){
+                map[i][j] = type.VOID;
+            }
+        }
+    }
 
     public type getType(int x, int y){
         return map[y][x];
