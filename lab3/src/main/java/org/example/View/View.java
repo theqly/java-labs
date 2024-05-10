@@ -1,6 +1,7 @@
 package org.example.View;
 
 import org.example.Controller.Controller;
+import org.example.Model.Coin;
 import org.example.Model.Field;
 import org.example.Model.Model;
 
@@ -42,6 +43,12 @@ public class View extends JPanel{
                 g.fillRect(x, y, 1, 1);
             }
         }
+
+        g.setColor(Color.YELLOW);
+        for (Coin coin : model.getCoins()){
+            g.fillRect(coin.getPositionX(), coin.getPositionY(), 10, 10);
+        }
+
         g.setColor(new Color(181, 193, 142));
         g.fillRect(model.getPlayer().getPositionX(), model.getPlayer().getPositionY(), 20, 20);
     }
