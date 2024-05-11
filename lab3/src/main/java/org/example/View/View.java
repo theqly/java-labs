@@ -15,25 +15,52 @@ public class View extends JPanel{
     public View(Model model, Controller controller){
         this.model = model;
         this.controller = controller;
-        frame = new JFrame("Digger");
+        setMinimumSize(new Dimension(model.getField().getWidth(), model.getField().getHeight()));
         initialize();
     }
 
 
     private void initialize() {
-        frame.add(this);
-        frame.setSize(model.getField().getWidth(), model.getField().getHeight());
+        frame = new JFrame("Digger");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setFocusable(true);
-        frame.setVisible(true);
         frame.addKeyListener(controller);
-        this.setFocusable(true);
+        frame.setLayout(new BorderLayout());
+
+        int fieldWidth = model.getField().getWidth();
+        int fieldHeight = model.getField().getHeight();
+
+        frame.setResizable(false);
+        frame.add(this, BorderLayout.CENTER);
+        frame.setVisible(true);
+
+        Insets insets = frame.getInsets();
+        int borderX = insets.left + insets.right;
+        int borderY = insets.top + insets.bottom;
+
+        frame.setSize(fieldWidth + borderX, fieldHeight + borderY);
+        frame.setMinimumSize(new Dimension(fieldWidth + borderX, fieldHeight + borderY));
     }
 
+    public void showEndGameDialog() {
+        Object[] options = {"quit"};
+        int choice = JOptionPane.showOptionDialog(frame,
+                "Do you want to quit the game?",
+                "You won!",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+        if (choice == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
+    }
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         Field field = model.getField();
+
         for(int y = 0; y < field.getHeight(); ++y){
             for(int x = 0; x < field.getWidth(); ++x){
                 switch (field.getType(x, y)){

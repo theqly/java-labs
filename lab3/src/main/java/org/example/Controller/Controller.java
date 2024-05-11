@@ -27,6 +27,9 @@ public class Controller implements KeyListener {
             case KeyEvent.VK_D -> model.movePlayer(Player.direction.RIGHT);
         }
         view.repaint();
+        if (model.isEnded()){
+            view.showEndGameDialog();
+        }
     }
 
     @Override
