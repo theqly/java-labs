@@ -3,7 +3,9 @@ package org.example.View;
 import org.example.Controller.Controller;
 import org.example.Model.Coin;
 import org.example.Model.Field;
+import org.example.Model.Ghost;
 import org.example.Model.Model;
+import java.util.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,9 +14,25 @@ public class View extends JPanel{
     private Model model;
     private Controller controller;
     private JFrame frame;
+    private java.util.Timer timer;
+    private long lastState;
     public View(Model model, Controller controller){
         this.model = model;
         this.controller = controller;
+        this.timer = new java.util.Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                long curState = model.getState();
+                if(lastState != model.getState()) {
+                    if(model.isEnded()){
+                        if(model.getPlayer().isAlive()) showEndGameDialog("won");
+                        else showEndGameDialog("lose");
+                    } else repaint();
+                    lastState = curState;
+                }
+            }
+        }, 30, 30);
         setMinimumSize(new Dimension(model.getField().getWidth(), model.getField().getHeight()));
         initialize();
     }
@@ -42,11 +60,11 @@ public class View extends JPanel{
         frame.setMinimumSize(new Dimension(fieldWidth + borderX, fieldHeight + borderY));
     }
 
-    public void showEndGameDialog() {
+    public void showEndGameDialog(String condition) {
         Object[] options = {"quit"};
         int choice = JOptionPane.showOptionDialog(frame,
                 "Do you want to quit the game?",
-                "You won!",
+                "You " + condition + "!",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 null,
@@ -74,6 +92,11 @@ public class View extends JPanel{
         g.setColor(Color.YELLOW);
         for (Coin coin : model.getCoins()){
             g.fillRect(coin.getPositionX(), coin.getPositionY(), 10, 10);
+        }
+
+        g.setColor(Color.black);
+        for (Ghost ghost : model.getGhosts()){
+            g.fillRect(ghost.getPositionX(), ghost.getPositionY(), 20, 20);
         }
 
         g.setColor(new Color(181, 193, 142));

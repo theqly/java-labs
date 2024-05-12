@@ -1,6 +1,6 @@
 package org.example.Model;
 
-public class Player {
+public class Player extends GameObject{
 
     public static enum direction{
         UP,
@@ -9,34 +9,13 @@ public class Player {
         RIGHT,
 
     }
-    private int positionX;
-    private int positionY;
     private final int[] speed;
-    private final int width;
-    private final int height;
+    private boolean isAlive;
 
     public Player(int x, int y){
-        positionX = x;
-        positionY = y;
+        super(x, y, 20, 20);
         speed = new int[2];
-        width = 20;
-        height = 20;
-    }
-
-    public int getPositionX(){
-        return positionX;
-    }
-
-    public int getPositionY(){
-        return positionY;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getWidth() {
-        return width;
+        isAlive = true;
     }
 
     public void setPosition(int x, int y){
@@ -55,8 +34,14 @@ public class Player {
 
     public void move(){
         positionX += speed[0];
-        if(positionX < 0) positionX = 0;
         positionY += speed[1];
-        if(positionY < 0) positionY = 0;
+    }
+
+    public void setAlive(boolean alive) {
+        isAlive = alive;
+    }
+
+    public boolean isAlive() {
+        return isAlive;
     }
 }
