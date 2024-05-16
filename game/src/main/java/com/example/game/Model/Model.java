@@ -1,4 +1,4 @@
-package org.example.Model;
+package com.example.game.Model;
 
 
 import java.io.File;

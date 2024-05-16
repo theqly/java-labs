@@ -1,30 +1,25 @@
-package org.example.View;
+package com.example.game.View;
 
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import org.example.Controller.Controller;
-import org.example.Controller.ControllerWrapper;
-import org.example.Model.Coin;
-import org.example.Model.Field;
-import org.example.Model.Ghost;
-import org.example.Model.Model;
+import com.example.game.Controller.Controller;
+import com.example.game.Model.*;
 
 import java.util.Optional;
 
 public class ViewFX extends BorderPane {
     private Model model;
-    private Controller controller;
     private AnimationTimer animationTimer;
     private long lastState;
 
     public ViewFX(Model model, Controller controller) {
         this.model = model;
-        this.controller = controller;
 
         Canvas canvas = new Canvas(model.getField().getWidth(), model.getField().getHeight());
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -37,11 +32,14 @@ public class ViewFX extends BorderPane {
                 long curState = model.getState();
                 if (lastState != model.getState()) {
                     if (model.isEnded()) {
-                        if (model.getPlayer().isAlive()) {
-                            showEndGameDialog("won");
-                        } else {
-                            showEndGameDialog("lose");
-                        }
+                        animationTimer.stop();
+                        Platform.runLater(() -> {
+                            if (model.getPlayer().isAlive()) {
+                                showEndGameDialog("won");
+                            } else {
+                                showEndGameDialog("lose");
+                            }
+                        });
                     } else {
                         draw(gc);
                     }
@@ -52,7 +50,8 @@ public class ViewFX extends BorderPane {
         animationTimer.start();
 
         setFocusTraversable(true);
-        canvas.setOnKeyPressed(new ControllerWrapper(controller));
+        canvas.setFocusTraversable(true);
+        canvas.setOnKeyPressed(controller);
     }
 
     private void draw(GraphicsContext gc) {
