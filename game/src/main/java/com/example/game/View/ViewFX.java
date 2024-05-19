@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import com.example.game.Controller.Controller;
 import com.example.game.Model.*;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class ViewFX extends BorderPane {
@@ -30,16 +31,11 @@ public class ViewFX extends BorderPane {
             @Override
             public void handle(long now) {
                 long curState = model.getState();
-                if (lastState != model.getState()) {
+                if (lastState != curState) {
                     if (model.isEnded()) {
+                        draw(gc);
                         animationTimer.stop();
-                        Platform.runLater(() -> {
-                            if (model.getPlayer().isAlive()) {
-                                showEndGameDialog("won");
-                            } else {
-                                showEndGameDialog("lose");
-                            }
-                        });
+                        Platform.runLater(() -> showEndGameDialog());
                     } else {
                         draw(gc);
                     }
@@ -52,6 +48,10 @@ public class ViewFX extends BorderPane {
         setFocusTraversable(true);
         canvas.setFocusTraversable(true);
         canvas.setOnKeyPressed(controller);
+
+        canvas.setOnMouseClicked(event -> canvas.requestFocus());
+
+        Platform.runLater(canvas::requestFocus);
     }
 
     private void draw(GraphicsContext gc) {
@@ -83,20 +83,35 @@ public class ViewFX extends BorderPane {
 
         gc.setFill(Color.rgb(181, 193, 142));
         gc.fillRect(model.getPlayer().getPositionX(), model.getPlayer().getPositionY(), 20, 20);
+
+        String timeText = "Time: " + model.getTime();
+        double x = 10;
+        double y = 20;
+
+        gc.setStroke(Color.WHITE);
+        gc.setLineWidth(2);
+        gc.strokeText(timeText, x, y);
+
+        gc.setFill(Color.BLACK);
+        gc.fillText(timeText, x, y);
     }
 
-    public void showEndGameDialog(String condition) {
+    public void showEndGameDialog() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Game Over");
-        alert.setHeaderText("You " + condition + "!");
+        if(model.getPlayer().isAlive()) alert.setHeaderText("You won! Your time is " + model.getTime());
+        else alert.setHeaderText("You lose!");
         alert.setContentText("Do you want to quit the game?");
         ButtonType quitButton = new ButtonType("Quit");
-        ButtonType continueButton = new ButtonType("Continue");
-        alert.getButtonTypes().setAll(quitButton, continueButton);
+        alert.getButtonTypes().setAll(quitButton);
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == quitButton) {
-            System.exit(0);
+            Platform.runLater(() -> {
+                Platform.exit();
+                System.exit(0);
+            });
         }
     }
+
 }

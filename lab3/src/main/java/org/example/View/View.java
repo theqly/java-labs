@@ -26,6 +26,7 @@ public class View extends JPanel{
                 long curState = model.getState();
                 if(lastState != model.getState()) {
                     if(model.isEnded()){
+                        repaint();
                         if(model.getPlayer().isAlive()) showEndGameDialog("won");
                         else showEndGameDialog("lose");
                     } else repaint();
@@ -62,9 +63,12 @@ public class View extends JPanel{
 
     public void showEndGameDialog(String condition) {
         Object[] options = {"quit"};
+        String message;
+        if(model.getPlayer().isAlive()) message = "You won! Your time is " + model.getTime();
+        else message = "You lose!";
         int choice = JOptionPane.showOptionDialog(frame,
                 "Do you want to quit the game?",
-                "You " + condition + "!",
+                message,
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 null,
@@ -101,6 +105,11 @@ public class View extends JPanel{
 
         g.setColor(new Color(181, 193, 142));
         g.fillRect(model.getPlayer().getPositionX(), model.getPlayer().getPositionY(), 20, 20);
+
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        String timeText = "Time: " + model.getTime() + "s";
+        g.drawString(timeText, 10, 20);
     }
 
 }

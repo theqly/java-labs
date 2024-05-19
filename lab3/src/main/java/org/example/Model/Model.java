@@ -1,8 +1,7 @@
 package org.example.Model;
 
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.*;
 
 public class Model {
@@ -12,23 +11,28 @@ public class Model {
     private ArrayList<Coin> coins;
     private ArrayList<Ghost> ghosts;
     private int ghostSpeed = 1;
+    private long startTime;
+    private long endTime;
     private Timer ghostTimer;
     private long state;
     private boolean isEnded;
+    private List<Record> records;
+    private String nickname = "player";
 
     public Model() {
         field = new Field(500, 500);
         player = new Player(436, 0);
-        field.initMap(new File("/home/theqly/programming/projects/java-labs/lab3/src/main/resources/level1.txt"));
+        field.initMap(new File("/home/whoistheql/programming/projects/java-labs/lab3/src/main/resources/map.txt"));
         field.digEarth(player.getPositionX(), player.getPositionY(), player.getWidth(), player.getHeight());
         coins = new ArrayList<>();
         ghosts = new ArrayList<>();
         ghostTimer = new Timer();
         isEnded = false;
-        loadCoins(new File("/home/theqly/programming/projects/java-labs/lab3/src/main/resources/level1_coins.txt"));
+        loadCoins(new File("/home/whoistheql/programming/projects/java-labs/lab3/src/main/resources/coins.txt"));
         loadGhosts();
+        records = loadRecords(new File("/home/whoistheql/programming/projects/java-labs/lab3/src/main/resources/score_board.txt"));
+        startTime = System.currentTimeMillis();
     }
-
 
     public void movePlayer(Player.direction direction){
         switch (direction){
@@ -105,10 +109,12 @@ public class Model {
     }
 
     private void update(){
-        field.digEarth(player.getPositionX(), player.getPositionY(), player.getWidth(), player.getHeight());
-        checkCoinsCollisions();
-        state++;
-        if(coins.isEmpty()) stop();
+        if(!isEnded){
+            field.digEarth(player.getPositionX(), player.getPositionY(), player.getWidth(), player.getHeight());
+            checkCoinsCollisions();
+            state++;
+            if(coins.isEmpty()) stop();
+        }
     }
 
     private void checkCoinsCollisions(){
@@ -142,6 +148,22 @@ public class Model {
         if(object1.getPositionX() >= object2.getPositionX() + object2.getWidth()) return false;
         return true;
     }
+
+    private void saveRecord(double time){
+        records.add(new Record(nickname, time));
+        Collections.sort(records);
+        writeRecords(new File("/home/whoistheql/programming/projects/java-labs/lab3/src/main/resources/score_board.txt"));
+    }
+
+    private void writeRecords(File file){
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+            for (Record record : records) {
+                bw.write(record.getNickname() + ": " + record.getTime() + "\n");
+            }
+        } catch (IOException e) {
+            System.out.println("Error writing records: " + e.getMessage());
+        }
+    }
     private void loadCoins(File file){
         try {
             Scanner scanner = new Scanner(file);
@@ -173,9 +195,37 @@ public class Model {
         }, 5, 5);
     }
 
-    private void stop(){
-        isEnded = true;
+    private List<Record> loadRecords(File file) {
+        List<Record> recordsList = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(": ");
+                recordsList.add(new Record(parts[0], Double.parseDouble(parts[1])));
+            }
+        } catch (IOException e) {
+            System.out.println("Error loading records: " + e.getMessage());
+        }
+        return recordsList;
     }
+
+    private void stop(){
+        endTime = System.currentTimeMillis() - startTime;
+        isEnded = true;
+        if(player.isAlive()) saveRecord((double) endTime / 1000);
+
+        if(ghostTimer != null){
+            ghostTimer.cancel();
+        }
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+    public void setStartTime(){
+        startTime = System.currentTimeMillis();
+    }
+
     public Field getField() {
         return field;
     }
@@ -193,6 +243,15 @@ public class Model {
 
     public long getState() {
         return state;
+    }
+
+    public double getTime(){
+        if(isEnded) return (double) endTime / 1000;
+        return (double) (System.currentTimeMillis() - startTime) / 1000;
+    }
+
+    public List<Record> getRecords() {
+        return records;
     }
 
     public boolean isEnded() {
