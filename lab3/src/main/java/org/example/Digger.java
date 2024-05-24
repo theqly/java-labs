@@ -6,7 +6,6 @@ import org.example.View.View;
 import org.example.Menu.*;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -21,7 +20,7 @@ public class Digger extends JFrame {
 
     public Digger() {
         setTitle("Digger");
-        setSize(500, 500);
+        setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         showMainMenu();
@@ -44,12 +43,13 @@ public class Digger extends JFrame {
             controller.setModel(model);
             view = new View(model, controller);
             model.setStartTime();
+            dispose();
         }
     }
 
     public void showScoreBoard() {
         List<org.example.Model.Record> recordsList = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("/home/whoistheql/programming/projects/java-labs/lab3/src/main/resources/score_board.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("/home/theqly/programming/projects/java-labs/lab3/src/main/resources/score_board.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(": ");

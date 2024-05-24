@@ -28,7 +28,7 @@ public class Digger extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        primaryStage.setTitle("My Game");
+        primaryStage.setTitle("Digger");
 
         showMainMenu();
     }
@@ -63,14 +63,14 @@ public class Digger extends Application {
 
     public void showScoreBoard() {
         List<Record> recordsList = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("/home/whoistheql/programming/projects/java-labs/game/src/main/resources/score_board.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("/home/theqly/programming/projects/java-labs/game/src/main/resources/score_board.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(": ");
                 recordsList.add(new Record(parts[0], Double.parseDouble(parts[1])));
             }
         } catch (IOException e) {
-            System.out.println("Error loading records: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
         ScoreBoard scoreBoard = new ScoreBoard(recordsList, this);
         Scene scoreBoardScene = new Scene(scoreBoard, 500, 500);

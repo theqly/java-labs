@@ -22,15 +22,15 @@ public class Model {
     public Model() {
         field = new Field(500, 500);
         player = new Player(436, 0);
-        field.initMap(new File("/home/whoistheql/programming/projects/java-labs/game/src/main/resources/map.txt"));
+        field.initMap(new File("/home/theqly/programming/projects/java-labs/game/src/main/resources/map.txt"));
         field.digEarth(player.getPositionX(), player.getPositionY(), player.getWidth(), player.getHeight());
         coins = new ArrayList<>();
         ghosts = new ArrayList<>();
         ghostTimer = new Timer();
         isEnded = false;
-        loadCoins(new File("/home/whoistheql/programming/projects/java-labs/lab3/src/main/resources/coins.txt"));
+        loadCoins(new File("/home/theqly/programming/projects/java-labs/lab3/src/main/resources/coins.txt"));
         loadGhosts();
-        records = loadRecords(new File("/home/whoistheql/programming/projects/java-labs/game/src/main/resources/score_board.txt"));
+        records = loadRecords(new File("/home/theqly/programming/projects/java-labs/game/src/main/resources/score_board.txt"));
         startTime = System.currentTimeMillis();
     }
 
@@ -46,7 +46,7 @@ public class Model {
         checkPlayerPosition();
         update();
     }
-    public void moveGhosts(){
+    private void moveGhosts(){
         for(Ghost ghost : ghosts){
             int y, x;
             ArrayList<Player.direction> movement = new ArrayList<>();
@@ -152,7 +152,7 @@ public class Model {
     private void saveRecord(double time){
         records.add(new Record(nickname, time));
         Collections.sort(records);
-        writeRecords(new File("/home/whoistheql/programming/projects/java-labs/game/src/main/resources/score_board.txt"));
+        writeRecords(new File("/home/theqly/programming/projects/java-labs/game/src/main/resources/score_board.txt"));
     }
 
     private void writeRecords(File file){

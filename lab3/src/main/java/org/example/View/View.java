@@ -11,8 +11,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class View extends JPanel{
-    private Model model;
-    private Controller controller;
+    private final Model model;
+    private final Controller controller;
     private JFrame frame;
     private java.util.Timer timer;
     private long lastState;
@@ -27,14 +27,14 @@ public class View extends JPanel{
                 if(lastState != model.getState()) {
                     if(model.isEnded()){
                         repaint();
-                        if(model.getPlayer().isAlive()) showEndGameDialog("won");
-                        else showEndGameDialog("lose");
+                        if(model.getPlayer().isAlive()) showEndGameDialog();
+                        else showEndGameDialog();
                     } else repaint();
                     lastState = curState;
                 }
             }
         }, 30, 30);
-        setMinimumSize(new Dimension(model.getField().getWidth(), model.getField().getHeight()));
+        setMinimumSize(new Dimension(model.getField().getWidth() + 100, model.getField().getHeight() + 100));
         initialize();
     }
 
@@ -61,7 +61,7 @@ public class View extends JPanel{
         frame.setMinimumSize(new Dimension(fieldWidth + borderX, fieldHeight + borderY));
     }
 
-    public void showEndGameDialog(String condition) {
+    public void showEndGameDialog() {
         Object[] options = {"quit"};
         String message;
         if(model.getPlayer().isAlive()) message = "You won! Your time is " + model.getTime();
@@ -75,6 +75,7 @@ public class View extends JPanel{
                 options,
                 options[0]);
         if (choice == JOptionPane.YES_OPTION) {
+            timer.cancel();
             System.exit(0);
         }
     }
