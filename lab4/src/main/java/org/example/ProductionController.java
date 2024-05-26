@@ -14,7 +14,6 @@ public class ProductionController extends Thread{
     private final Storage<Engine> engineStorage;
     private final Storage<Accessory> accessoryStorage;
     private ThreadPool workers;
-    private int delay;
     private boolean isWorking;
 
     public ProductionController(Storage<Auto> autoStorage, Storage<Body> bodyStorage, Storage<Engine> engineStorage, Storage<Accessory> accessoryStorage, ThreadPool workers, int delay){
@@ -34,10 +33,11 @@ public class ProductionController extends Thread{
                     while(workers.getTasksSize() >= autoStorage.getFreeCapacity()){
                         autoStorage.wait();
                     }
-                    int necessity = autoStorage.getFreeCapacity() - workers.getTasksSize();
-                    for(int i = 0; i < necessity; ++i){
+                    int tasksToFull = autoStorage.getFreeCapacity() - workers.getTasksSize();
+                    for(int i = 0; i < tasksToFull; ++i){
                         workers.addTask(new Task(bodyStorage, engineStorage, accessoryStorage, autoStorage));
                     }
+                    autoStorage.notifyAll();
                 }
             }
         } catch (InterruptedException e){

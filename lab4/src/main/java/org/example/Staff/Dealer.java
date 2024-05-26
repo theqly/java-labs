@@ -6,7 +6,7 @@ import org.example.Storage.Storage;
 public class Dealer extends Thread{
     private final Storage<Auto> storage;
     private int delay;
-    private int id;
+    private final int id;
     private boolean isWorking;
     public Dealer(Storage<Auto> storage, int id){
         this.storage = storage;
@@ -19,10 +19,10 @@ public class Dealer extends Thread{
         double startTime = (double) System.currentTimeMillis() / 1000;
         try {
             while(!Thread.currentThread().isInterrupted() && isWorking){
-                Thread.sleep(delay);
                 Auto auto = storage.take();
                 double curTime = (double) System.currentTimeMillis() / 1000 - startTime;
                 System.out.println(curTime + " Dealer: " + id + " " + auto.getInfo());
+                Thread.sleep(delay);
             }
         } catch (InterruptedException e){
             e.printStackTrace();

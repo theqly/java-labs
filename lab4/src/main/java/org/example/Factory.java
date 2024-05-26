@@ -140,4 +140,7 @@ public class Factory{
     public int getBodyStorageSize() {
         return bodyStorage.getSize();
     }
+    public int getAutoStorageSize(){
+        return autoStorage.getSize();
+    }
 }

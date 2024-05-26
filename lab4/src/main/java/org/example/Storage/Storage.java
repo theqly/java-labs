@@ -12,9 +12,9 @@ public class Storage<T> {
         this.items  = new LinkedList<>();
     }
 
-    public void put(T item){
+    /*public void put(T item){
         synchronized (items){
-            while(items.size() == capacity){
+            while(items.size() >= capacity){
                 try{
                     items.wait();
                 } catch (InterruptedException e){
@@ -26,7 +26,7 @@ public class Storage<T> {
         }
     }
 
-    public synchronized T take(){
+    public T take(){
         synchronized (items){
             while(items.isEmpty()){
                 try{
@@ -39,6 +39,31 @@ public class Storage<T> {
             items.notifyAll();
             return item;
         }
+    }*/
+
+    public synchronized void put(T item) {
+        while (items.size() >= capacity) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        items.add(item);
+        notifyAll();
+    }
+
+    public synchronized T take() {
+        while (items.isEmpty()) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        T item = items.poll();
+        notifyAll();
+        return item;
     }
 
     public synchronized int getCapacity(){

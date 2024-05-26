@@ -23,12 +23,14 @@ public class ThreadPool {
         }
     }
 
-    public synchronized void addTask(Task task){
-        tasks.add(task);
-        notifyAll();
+    public void addTask(Task task){
+        synchronized (tasks){
+            tasks.add(task);
+            tasks.notifyAll();
+        }
     }
 
-    public synchronized void stopWorking(){
+    public void stopWorking(){
         for(WorkerThread workerThread : workers) workerThread.stopWorking();
     }
 
@@ -46,29 +48,23 @@ public class ThreadPool {
         public void run(){
             isWorking = true;
             Task task;
-            while(!Thread.currentThread().isInterrupted() && isWorking){
-                synchronized (ThreadPool.this){
-                    while(tasks.isEmpty()){
-                        try{
-                            ThreadPool.this.wait();
-                        } catch (InterruptedException e){
-                            e.printStackTrace();
-                            Thread.currentThread().interrupt();
+            try{
+                while(!Thread.currentThread().isInterrupted() && isWorking){
+
+                    synchronized (tasks){
+                        while(tasks.isEmpty()){
+                            tasks.wait();
                         }
+                        task = tasks.poll();
                     }
-                    try{
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e){
-                        e.printStackTrace();
-                    }
-                    task = tasks.poll();
+                    if(task != null) task.doTask();
+                    Thread.sleep(delay);
                 }
-                try{
-                    if(task != null) task.run();
-                } catch (RuntimeException e){
-                    e.printStackTrace();
-                }
+            } catch (InterruptedException e){
+                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
+
         }
 
         public void stopWorking(){

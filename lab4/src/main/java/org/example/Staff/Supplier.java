@@ -12,16 +12,16 @@ public class Supplier<T extends AutoPart> extends Thread{
     public Supplier(Storage<T> storage, java.util.function.Supplier<T> supplier){
         this.storage = storage;
         this.supplier = supplier;
-        this.isWorking = true;
     }
 
     @Override
     public void run(){
+        this.isWorking = true;
         try {
             while (!Thread.currentThread().isInterrupted() && isWorking) {
-                Thread.sleep(delay);
                 T item = supplier.get();
                 storage.put(item);
+                Thread.sleep(delay);
             }
         } catch (InterruptedException e){
             e.printStackTrace();
