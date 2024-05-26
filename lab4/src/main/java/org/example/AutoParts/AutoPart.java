@@ -1,13 +1,8 @@
 package org.example.AutoParts;
 
-public abstract class AutoPart {
-    private final int id;
-    private static int counter;
-    public AutoPart(){
-        id = counter++;
-    }
+import java.util.concurrent.atomic.AtomicInteger;
 
-    public int getId(){
-        return id;
-    }
+public interface AutoPart {
+    public int getId();
+
 }
