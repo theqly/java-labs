@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Auto {
     private final Body body;
     private final Engine engine;
-    private Accessory accessory;
+    private final Accessory accessory;
     private final static AtomicInteger id_generator = new AtomicInteger(0);
     private final int id;
 
@@ -17,6 +17,6 @@ public class Auto {
     }
 
     public String getInfo(){
-        return String.format("Auto: %d (Body: %d, Engine: %d, Accessory: %d", this.id, body.getId(), engine.getId(), accessory.getId());
+        return String.format("Auto: %d (Body: %d, Engine: %d, Accessory: %d)", this.id, body.getId(), engine.getId(), accessory.getId());
     }
 }
